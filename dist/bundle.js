@@ -3535,7 +3535,8 @@
 	Object.defineProperty(exports, "__esModule", { value: true });
 	var React = __webpack_require__(1);
 	var react_redux_1 = __webpack_require__(25);
-	var actions_1 = __webpack_require__(53);
+	var RegExp_1 = __webpack_require__(53);
+	var actions_1 = __webpack_require__(54);
 	var mapStateToProps = function mapStateToProps(state, ownProps) {
 	    return {
 	        data: state.data,
@@ -3563,8 +3564,19 @@
 	
 	        var _this = _possibleConstructorReturn(this, (ContactUsComponent.__proto__ || Object.getPrototypeOf(ContactUsComponent)).apply(this, arguments));
 	
+	        _this.errors = {
+	            email: 'Please provide a valid email address',
+	            name: 'Please enter a valid name',
+	            message: 'Please enter message'
+	        };
+	        _this.state = {
+	            emailValid: true,
+	            nameValid: true,
+	            messageValid: true
+	        };
 	        _this._onClickSave = function (e) {
 	            e.preventDefault();
+	            if (!_this.isValidated()) return;
 	            if (!_this.props.isSaving) {
 	                var name = _this.refs.name;
 	                var email = _this.refs.email;
@@ -3582,6 +3594,38 @@
 	    }
 	
 	    _createClass(ContactUsComponent, [{
+	        key: "isValidated",
+	        value: function isValidated() {
+	            this.state.emailValid = RegExp_1.email.test(this.refs.email['value']);
+	            this.state.nameValid = RegExp_1.alphaNumeric2.test(this.refs.name['value']) && this.refs.name['value'].length > 2;
+	            this.state.messageValid = this.refs.message['value'].length > 0;
+	            if (!this.state.messageValid) {
+	                this.refs.message['className'] = 'form-coformntrol-error';
+	                this.refs.message.focus();
+	            } else {
+	                this.refs.message['className'] = 'form-control';
+	            }
+	            if (!this.state.emailValid) {
+	                this.refs.email['className'] = 'form-control-error';
+	                this.refs.email.focus();
+	            } else {
+	                this.refs.email['className'] = 'form-control';
+	            }
+	            if (!this.state.nameValid) {
+	                this.refs.name['className'] = 'form-control-error';
+	                this.refs.name.focus();
+	            } else {
+	                this.refs.name['className'] = 'form-control';
+	            }
+	            this.forceUpdate();
+	            return this.state.emailValid && this.state.nameValid && this.state.messageValid;
+	        }
+	    }, {
+	        key: "componentDidMount",
+	        value: function componentDidMount() {
+	            this.refs.name.focus();
+	        }
+	    }, {
 	        key: "render",
 	        value: function render() {
 	            var _props = this.props,
@@ -3590,7 +3634,7 @@
 	                isLoading = _props.isLoading,
 	                error = _props.error;
 	
-	            return React.createElement("div", null, React.createElement("div", null, React.createElement("div", null, Object(data.message).name), React.createElement("div", null, Object(data.message).email), React.createElement("div", null, Object(data.message).message)), React.createElement("form", null, React.createElement("div", { className: "form" }, React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Name:"), React.createElement("div", { className: "form-cell input" }, React.createElement("input", { id: "name", type: "text", ref: "name" }))), React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Email:"), React.createElement("div", { className: "form-cell input" }, React.createElement("input", { type: "text", ref: "email" }))), React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Message:"), React.createElement("div", { className: "form-cell textarea" }, React.createElement("textarea", { ref: "message" })))), React.createElement("button", { ref: 'save', disabled: isSaving, onClick: this._onClickSave }, isSaving ? 'saving...' : 'save'), React.createElement("button", { ref: 'load', disabled: isLoading, onClick: this._onClickLoad }, isLoading ? 'loading...' : 'load'), error ? React.createElement("div", { className: 'error' }, error) : null));
+	            return React.createElement("div", null, React.createElement("div", null, React.createElement("div", null, Object(data.message).name), React.createElement("div", null, Object(data.message).email), React.createElement("div", null, Object(data.message).message)), React.createElement("form", null, React.createElement("div", { className: "form" }, React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Name:"), React.createElement("div", { className: "form-cell input" }, React.createElement("input", { ref: "name", autoComplete: "off", type: "text", defaultValue: '', placeholder: "Please enter name.", className: "form-control" }), this.state.nameValid === false && React.createElement("div", { className: "error-box" }, React.createElement("label", { className: "error-text" }, this.errors.name)))), React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Email:"), React.createElement("div", { className: "form-cell input" }, React.createElement("input", { ref: "email", autoComplete: "off", type: "email", placeholder: "shibu@shibu.com", className: "form-control" }), this.state.emailValid === false && React.createElement("div", { className: "error-box" }, React.createElement("label", { className: "error-text" }, this.errors.email)))), React.createElement("div", { className: "form-row" }, React.createElement("div", { className: "form-cell label" }, "Message:"), React.createElement("div", { className: "form-cell textarea" }, React.createElement("textarea", { ref: "message", className: "form-control" }), this.state.messageValid === false && React.createElement("div", { className: "error-box" }, React.createElement("label", { className: "error-text" }, this.errors.message))))), React.createElement("button", { ref: 'save', disabled: isSaving, onClick: this._onClickSave }, isSaving ? 'saving...' : 'save'), React.createElement("button", { ref: 'load', disabled: isLoading, onClick: this._onClickLoad }, isLoading ? 'loading...' : 'load'), error ? React.createElement("div", { className: 'error' }, error) : null));
 	        }
 	    }]);
 	
@@ -3601,12 +3645,75 @@
 
 /***/ },
 /* 53 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", { value: true });
+	// matches leading and trailing slashes in a url
+	exports.leadingTrailingSlashes = /^\/+|\/+$/g;
+	exports.leadingSlashes = /^\//;
+	exports.trailingSlashes = /\/$/;
+	// matches the protocol segment in a url
+	exports.urlPrototcol = /(?:(?:https?|ftp|wss?):\/\/)/g;
+	// matches ip addresses in urls
+	exports.ipAddress = /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}):(\d{1,5})/;
+	// matches the port number in urls
+	exports.portNumber = /:\d+/g;
+	// Matches any digit(s) (i.e. 0-9)
+	exports.digits = /^\d+$/;
+	// Matches any alpha(s)  within a string i.e is a char present
+	exports.alphas = /[a-zA-Z]/;
+	// Matches any diditss within a string i.e is a number present
+	exports.hasDigits = /[0-9]/;
+	// Matches only alpha characters
+	exports.alpha = /^[a-z]$/i;
+	// Matches only alphabets upper and lower case
+	exports.string = /^[a-z]*$/i;
+	// Matches only alphabets upper and lower case with spaces
+	exports.alphabetsWithSpaces = '^[A-Za-z \s]*$';
+	// Matches phone number
+	exports.phone = /^[0-9-\\/]*$/;
+	// To check a mobile phone containing at least 8 digits and can accept a + in first char(this will make 9 chars acceptable)
+	exports.mobilePhone = /^(\+)?\d{8,}$/;
+	exports.numericAndPlus = /^[0-9+]+$/;
+	// explicit check for 8 digits in the string
+	exports.hasEightDigitCheck = /^\D*(?:\d\D*){8,}$/;
+	// Matches Alpha, numbers and space, no special characters
+	exports.alphaNumeric = /^[0-9a-zA-Z \s]+$/;
+	// Username, alpha numeric with space without leading and trailing spaces
+	exports.alphaNumeric2 = /^[0-9a-zA-Z]+(\s+[0-9a-zA-Z]+)*$/;
+	// street, alpha numeric with space without leading and trailing spaces. Comma, hyphen and single quote accepted
+	exports.alphaNumeric3 = /^[0-9a-zA-Z,\-']+(\s+[0-9a-zA-Z,\-']+)*$/;
+	// Username, alpha numeric with space and international characters
+	exports.username = /^[0-9A-Za-z._äöüÄÖÜßËëÏïŸÿ-]*$/;
+	// Password - supports alpha, numeric, special characters, min 6 max 20
+	exports.password = /^[A-Za-z0-9!@#$%^&*()_]$/;
+	// To check a password between 8 to 20 characters which contain at least one numeric digit, and one lowercase letter
+	exports.password2 = /^(?=.*\d)(?=.*[a-z]).{8,20}$/;
+	// Matches any number (e.g. 100.000)
+	exports.number = /^-?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?$/;
+	// Matches a valid email address (e.g. mail@example.com)
+	exports.email = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	// Matches any valid url (e.g. http://www.example.com)
+	exports.url = "^(https?|ftp)://(((([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[da-f]{2})|[!$&'()*+,;=]|:)*@)?(((d|[1-9]d|1dd|2[0-4]d|25[0-5]).(d|[1-9]d|1dd|2[0-4]d|25[0-5]).(d|[1-9]d|1dd|2[0-4]d|25[0-5]).(d|[1-9]d|1dd|2[0-4]d|25[0-5]))|((([a-z]|d|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|d|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|d|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))).)+(([a-z]|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))).?)(:d*)?)(/((([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[da-f]{2})|[!$&'()*+,;=]|:|@)+(/(([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[da-f]{2})|[!$&'()*+,;=]|:|@)*)*)?)?(?((([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[da-f]{2})|[!$&'()*+,;=]|:|@)|[\uE000-\uF8FF]|/|?)*)?(#((([a-z]|d|-|.|_|~|[\xA0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(%[da-f]{2})|[!$&'()*+,;=]|:|@)|/|?)*)?$";
+	// Matches scores from the end of selection name for markets
+	// such as Correct Score.  allows for optional spaces between
+	// digits and numbers, for example:
+	// Bayer 04 Leverkusen 1 - 0 = '1 - 0'
+	// Bayer 04 Leverkusen 1-0 = '1-0'
+	exports.scores = /\d+\s?-\s?\d+$/;
+	// Matches Any character except *%?"; (For house number in Personal Details)
+	exports.houseNumber = /^[^*%?"; ]+$/;
+
+/***/ },
+/* 54 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
 	
 	Object.defineProperty(exports, "__esModule", { value: true });
-	var api_1 = __webpack_require__(54);
+	var api_1 = __webpack_require__(55);
 	var _saveData = {
 	    request: function request(_request) {
 	        return { type: 'SAVE_DATA_REQUEST', request: _request };
@@ -3647,7 +3754,7 @@
 	};
 
 /***/ },
-/* 54 */
+/* 55 */
 /***/ function(module, exports) {
 
 	"use strict";
